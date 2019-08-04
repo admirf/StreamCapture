@@ -133,7 +133,13 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="IPacketHandler.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NetflixHandler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IPacketHandler.h" />
+    <ClInclude Include="NetflixHandler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

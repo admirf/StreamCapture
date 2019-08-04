@@ -4,6 +4,7 @@
 #include <SSLLayer.h>
 #include <PlatformSpecificUtils.h>
 #include <iostream>
+#include "NetflixHandler.h"
 
 using namespace std;
 
@@ -12,10 +13,8 @@ static void onPacketArrives(pcpp::RawPacket*, pcpp::PcapLiveDevice*, void*);
 
 int main() 
 {
-	// IPv4 address of the interface we want to sniff
 	std::string interfaceIPAddr = "192.168.0.13";
 
-	// find the interface by IP address
 	pcpp::PcapLiveDevice* dev = pcpp::PcapLiveDeviceList::getInstance().getPcapLiveDeviceByIp(interfaceIPAddr.c_str());
 
 	if (dev == nullptr)
@@ -32,30 +31,35 @@ int main()
 
 	cout << "Starting capture on: " << interfaceIPAddr << endl;
 
-	dev->startCapture(onPacketArrives, nullptr);
+	vector<strcap::IPacketHandler*> handlers;
+	handlers.push_back(new strcap::NetflixHandler());
 
-	PCAP_SLEEP(10);
+	dev->startCapture(onPacketArrives, &handlers);
+
+	PCAP_SLEEP(60);
 
 	dev->stopCapture();
+
+	for (auto& handler : handlers) {
+		delete handler;
+	}
 
 	return 0;
 }
 
 void onPacketArrives(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* dev, void* cookie)
 {
-	cout << packet->getFrameLength() << endl;
+	auto handlers = static_cast<vector<strcap::IPacketHandler*>*>(cookie);
 
 	pcpp::Packet parsedPacket(packet);
 
-	for (pcpp::Layer* curLayer = parsedPacket.getFirstLayer(); curLayer != NULL; curLayer = curLayer->getNextLayer())
+	for (auto& handler : *handlers) {
+		handler->handle(parsedPacket);
+	}
+	/*
+	for (auto curLayer = parsedPacket.getFirstLayer(); curLayer != nullptr; curLayer = curLayer->getNextLayer())
 	{
 		auto type = getProtocolTypeAsString(curLayer->getProtocol());
-
-		//printf("Layer type: %s; Total data: %d [bytes]; Layer data: %d [bytes]; Layer payload: %d [bytes]\n",
-		//	getProtocolTypeAsString(curLayer->getProtocol()).c_str(), // get layer type
-		//	(int)curLayer->getDataLen(),                              // get total length of the layer
-		//	(int)curLayer->getHeaderLen(),                            // get the header length of the layer
-		//	(int)curLayer->getLayerPayloadSize());                    // get the payload length of the layer (equals total length minus header length)
 
 		if (type == "SSL") {
 			auto ssl = parsedPacket.getLayerOfType<pcpp::SSLLayer>();
@@ -73,7 +77,7 @@ void onPacketArrives(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* dev, void* c
 				}
 			}
 		}
-	}
+	}*/
 }
 
 std::string getProtocolTypeAsString(pcpp::ProtocolType protocolType)
