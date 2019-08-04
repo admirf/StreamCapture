@@ -69,7 +69,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Users\admir\Libraries\PcapPlusPlus-19.04\Pcap++\header;C:\Users\admir\Libraries\PcapPlusPlus-19.04\Common++\header;C:\Users\admir\Libraries\PcapPlusPlus-19.04\Packet++\header;C:\Users\admir\Libraries\WpdPack\Include;C:\Users\admir\Libraries\pthreads\Pre-built.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\admir\Libraries\PcapPlusPlus-19.04\Pcap++\Lib;C:\Users\admir\Libraries\PcapPlusPlus-19.04\Packet++\Lib;C:\Users\admir\Libraries\PcapPlusPlus-19.04\Common++\Lib;C:\Users\admir\Libraries\WpdPack\Lib\x64;C:\Users\admir\Libraries\pthreads\Pre-built.2\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -115,15 +118,19 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\admir\Libraries\libtins-master\include;C:\Users\admir\Libraries\WpdPack\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>C:\Users\admir\Libraries\libtins-master\build\lib\Release\tins.lib;Ws2_32.lib;Iphlpapi.lib;C:\Users\admir\Libraries\WpdPack\Lib\x64\wpcap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;IPHLPAPI.lib;wpcap.lib;Packet.lib;pthreadVC2.lib;Common++.lib;Packet++.lib;Pcap++.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

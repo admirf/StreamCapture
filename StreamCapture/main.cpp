@@ -1,31 +1,23 @@
-#define TINS_STATIC
-#define WIN32
-
+#include <IPv4Layer.h>
+#include <Packet.h>
+#include <PcapLiveDeviceList.h>
 #include <iostream>
-#include <tins/tins.h>
 
-using namespace Tins;
 using namespace std;
 
-bool callback(const PDU& pdu) {
-	cout << pdu.size() << ':';
+int main() 
+{
+	// IPv4 address of the interface we want to sniff
+	std::string interfaceIPAddr = "192.168.0.13";
 
-	// Find the IP layer
-	const IP& ip = pdu.rfind_pdu<IP>();
-	// Find the TCP layer
-	const TCP& tcp = pdu.rfind_pdu<TCP>();
+	// find the interface by IP address
+	pcpp::PcapLiveDevice* dev = pcpp::PcapLiveDeviceList::getInstance().getPcapLiveDeviceByIp(interfaceIPAddr.c_str());
 
-	cout << ip.src_addr() << ':' << tcp.sport() << " -> "
-		 << ip.dst_addr() << ':' << tcp.dport() << endl;
-	
+	if (dev == nullptr)
+	{
+		printf("Cannot find interface with IPv4 address of '%s'\n", interfaceIPAddr.c_str());
+		return 1;
+	}
 
-	return true;
-}
-
-int main() {
-	NetworkInterface iface = NetworkInterface::default_interface();
-
-	Sniffer sniff(iface.name());
-	sniff.set_filter("ip src 172.217.19.110");
-	sniff.sniff_loop(callback);
+	return 0;
 }
